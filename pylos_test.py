@@ -249,11 +249,11 @@ class Tree:
     def __init__(self, state, player, iteration, children=[], move = 'place'):
         self.move = move
         self.__children = copy.deepcopy(children)
-        self.__state = state
+        self.__state = copy.deepcopy(state)
         self.player = player
         self.iteration = iteration
 
-        bouh = self.tree(self.__state,self.player,self.iteration)
+        self.tree(self.__state,self.player,self.iteration)
 
     @property
     def children(self):
@@ -265,13 +265,18 @@ class Tree:
     def __getitem__(self, index):
         return self.__children[index]
 
-    def __str__(self):
-        def _str(tree, level):
-            result = '[{}]\ n'.format(tree.__value)
-            for child in tree.children:
-                result += '{} | - -{} '.format(' ' *level, _str(child, level + 1))
-            return result
-        return _str(self, 0)
+    def set(self, coord, value):                    #met la bille
+        layer, row, column = tuple(coord)
+        self.validPosition(layer, row, column)
+        self._state['visible']['board'][layer][row][column] = value
+
+#    def __str__(self):
+#        def _str(tree, level):
+#            result = '[{}]\ n'.format(tree.__value)
+#            for child in tree.children:
+#               result += '{} | - -{} '.format(' ' *level, _str(child, level + 1))
+#            return result
+#        return _str(self, 0)
 
     def savetree(self):
         """Save tree to the 'tree.json' file."""
@@ -293,34 +298,35 @@ class Tree:
 #            return []
 
     def tree(self,state,player, iteration,move = 'place'):
-        statecopy = copy.deepcopy(state)
-        t = statecopy._state['visible']
         #import ctypes
         #print(ctypes.cast(id(Tree(state, 0, iteration)), ctypes.py_object).value)
+        t = self.__state['visible']
         if iteration > 0:
             if move == 'place' and player == 0 :
                 for layer in range(0,len(t['board'])):
                     for row in range(0,len(t['board'][layer])):
                         for column in range(0,len(t['board'][layer][row])):
                             for value in t['board'][layer][row]:
-                                if value == None:
-                                    t['board'][layer][row][column] = 0
+                                if value is None:
+                                    statecopy = copy.deepcopy(t)
+                                    r = statecopy.set((layer,row,column),0)
                                     iteration -= 1
-                                    self.addChild(Tree(statecopy,1,iteration))
+                                    self.addChild(Tree(r,1,iteration))
 
             if move == 'place' and player == 1:
                 for layer in range(0,len(t['board'])):
                     for row in range(0,len(t['board'][layer])):
                         for column in range(0,len(t['board'][layer][row])):
                             for value in t['board'][layer][row]:
-                                if value == None:
-                                    t['board'][layer][row][column] = 1
+                                if value is None:
+                                    statecopy = copy.deepcopy(state)
+                                    statecopy.set((layer, row, column), 1)
                                     iteration -= 1
                                     self.addChild(Tree(statecopy, 0, iteration))
 
         arbre = {}
         arbre['tree'] = self.__children
-        #print(arbre)
+        print(arbre)
 #            if move == 'place' and player == 1 :
 #                for layer in t['board']:
 #                    for row in layer:
