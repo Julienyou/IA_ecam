@@ -81,10 +81,6 @@ class PylosState(game.GameState):
             ):
                 raise game.InvalidMoveException('The position ({}) is not movable'.format([layer, row, column]))
 
-    def createSquare1(self, coord):
-        layer, row, column = tuple(coord)
-
-
     def createSquare(self, coord):
         layer, row, column = tuple(coord)
 
@@ -222,6 +218,9 @@ class PylosClient(game.GameClient):
                         except game.InvalidMoveException:
                             pass
                         else:
+                            if Test_pylos.createsquare(layer, row, column) is True:
+
+
                             move = {
                                 'move': 'place',
                                 'to': [layer,row,column]
