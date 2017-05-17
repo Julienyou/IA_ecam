@@ -81,10 +81,6 @@ class PylosState(game.GameState):
             ):
                 raise game.InvalidMoveException('The position ({}) is not movable'.format([layer, row, column]))
 
-    def createSquare1(self, coord):
-        layer, row, column = tuple(coord)
-
-
     def createSquare(self, coord):
         layer, row, column = tuple(coord)
 
@@ -244,14 +240,45 @@ class PylosClient(game.GameClient):
                         availableHoles.append(hole)                         #on ajoute la liste hole à la liste availableHoles
         return availableHoles                                               #retourne la liste qui contient toutes les listes des emplacements des trous valides
 
-    def moveup(self, st, Test_pylos, holes):
+    def removableballs0(self, Test_pylos):
+        removableballs=[]
+        for layer in range(4):
+            for row in range(4 - layer):
+                for column in range(4 - layer):
+                    value = Test_pylos.get(layer, row, column)
+                    list = [layer, row, column]
+                    if value == 0 :
+                        try:
+                            Test_pylos.canMove(layer, row, column)
+                        except game.InvalidMoveException :
+                            pass
+                        else :
+                            removableballs.append(list)
+
+    def removableballs1(self, Test_pylos):
+        removableballs=[]
+        for layer in range(4):
+            for row in range(4 - layer):
+                for column in range(4 - layer):
+                    value = Test_pylos.get(layer, row, column)
+                    list = [layer, row, column]
+                    if value == 1 :
+                        try:
+                            Test_pylos.canMove(layer, row, column)
+                        except game.InvalidMoveException :
+                            pass
+                        else :
+                            removableballs.append(list)
+
+
+    def moveup(self, st, Test_pylos, holes, removableballs0, removableballs1):
         possibilities = []                                                 #liste qui contiendra move (dictionnaire avec la sorte de move, de où à où)
         if st._state['visible']['turn'] is 0:                                #si c'est le tour du joueur 0 : on cherche les 1 (c'est des 1 ou des @?)
             for layer in range(4):
                 for row in range(4 - layer):
                     for column in range(4 - layer):
                         value = Test_pylos.get(layer, row, column)
-                        if value is 1:                                      #on cherche les 1 (ou les @?)
+                        if value is 0:                                      #on cherche les 1 (ou les @?)
                             try:
                                 Test_pylos.canMove(layer, row, column)      #peut-on la bouger ? est ce qu'il n'y a pas de boule dessus?
                             except game.InvalidMoveException:               #si la réponse est non, on passe à la case suivante
@@ -285,12 +312,7 @@ class PylosClient(game.GameClient):
                                 possibilities.append(move)
 
 
-        else:                                                          #si c'est le tour du joueur 1, il faut chercher les 0 (d'après ce que j'ai vu quand j'ai lancé le jeu (pas logique)
-            for layer in range(4):
-                for row in range(4 - layer):
-                    for column in range(4 - layer):
-                        value = Test_pylos.get(layer, row, column)
-                        if value is 0:
+                        else:                                                          #si c'est le tour du joueur 1, il faut chercher les 0 (d'après ce que j'ai vu quand j'ai lancé le jeu (pas logique)
                             try:
                                 Test_pylos.canMove(layer, row, column)
                             except game.InvalidMoveException:
@@ -316,15 +338,30 @@ class PylosClient(game.GameClient):
                             # pour tous les trous dans cette liste, on peut les mettre dans le 'to' :
 
                             for i in availableHoles:
-
                                 move = {
                                     'move': 'move',
                                     'from': [layer, row, column],
                                     'to': availableHoles[i]
                                 }
                                 i += 1
-                            if Test_pylos.createSquare(layer,row,column) == True:
-                                
+                            if Test_pylos.createSquare(layer,row,column) is True:               #si ca forme un carré
+                                #on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
+                                for i in removableballs1 :
+                                    if i[0] == layer-1 and i[1] == row and i[2] == column:      #self.get(layer - 1, row, column) == None or
+                                        removableballs1.remove(i)
+                                    if i[0] == layer - 1 and i[1] == row+1 and i[2] == column:    #self.get(layer - 1, row + 1, column) == None or
+                                        removableballs1.remove(i)
+                                    if i[0] == layer - 1 and i[1] == row and i[2] == column:    #self.get(layer - 1, row + 1, column + 1) == None or
+                                        removableballs1.remove(i)
+                                    if i[0] == layer - 1 and i[1] == row and i[2] == column:    #self.get(layer - 1, row, column + 1) == None
+
+
+
+
+
+                                move['remove'] =
+
+                                data[key] = value
 
                                 possibilities.append(move)
         return possibilities
