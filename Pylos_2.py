@@ -345,9 +345,9 @@ class PylosClient(game.GameClient):
                                     if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
                                         removableballs0.remove(i)
                                     if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
-                                        removableballs1.remove(i)
+                                        removableballs0.remove(i)
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
-                                        removableballs1.remove(i)
+                                        removableballs0.remove(i)
                                     if i[0] == layer and i[1] == row and i[2] == column:  # la boule qu'on a montée n'est plus valable en tant que removableballs
                                         removableballs0.remove(i)
                                     removableballs0.append(i)  # on ajoute la boule qu'on vient de placer dans les removableballs
