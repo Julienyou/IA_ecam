@@ -311,7 +311,7 @@ class PylosClient(game.GameClient):
                             except game.InvalidMoveException:  # si la réponse est non, on passe à la case suivante
                                 pass
                             availableholes = self.holes(test_pylos)  # on va rechercher la variable availableHoles qui contient tous les trous valides du jeu (y compris les non-vaides dê à la boule qu'on va prendre)
-                            for i in availableHoles:  # on va voir dans chaque trou (exprimé en une liste [layer, row, column]
+                            for i in availableholes:  # on va voir dans chaque trou (exprimé en une liste [layer, row, column]
                                 if i[0] <= layer:  # checke si les layers des trous sont pas en dessous ou au même niveau que layer
                                     availableholes.remove(i)
                             for i in availableholes:
