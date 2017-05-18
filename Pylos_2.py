@@ -422,7 +422,7 @@ class PylosClient(game.GameClient):
                                 possibilities.append(move)
         return possibilities
 
-    def delta(self, st):
+    def delta_func(self, st):
         res0 = st._state['visible']['reserve'][0]
         res1 = st._state['visible']['reserve'][1]
         if st._state['visible']['turn'] is 0:
@@ -431,7 +431,7 @@ class PylosClient(game.GameClient):
             delta = res1-res0
         return delta
 
-    def firstmoves(self, mouvements):
+    def firstmoves_func(self, mouvements):
         firstmoves = mouvements
         return firstmoves                           #liste avec les mouvements
 
@@ -442,18 +442,17 @@ class PylosClient(game.GameClient):
         upmoves = self.moveup(st)                   #liste avec les dicos "move" pour moveup
         mouvements = placements + upmoves           #liste avec TOUS les "move"
         if iter is 3:
-            return self.firstmoves(mouvements)      #renvoie la liste avec les mouvements de la première itération (pour pouvoir les utiliser après pour choisir le nextmove)
+            self.firstmoves_func(mouvements)      #renvoie la liste avec les mouvements de la première itération (pour pouvoir les utiliser après pour choisir le nextmove)
         children = []                               #liste vide
         if iter < 1:                                #????
             return Tree(st._state['visible'])
         iter -= 1
+        deltas = []
         for mouvement in mouvements:                #on prend chaque "move" de la liste
-            deltas = []
             Pylos_copy = copy.deepcopy(st)
             Pylos_copy.update(mouvement, player)
-            deltas.append(self.delta(Pylos_copy))
+            deltas.append(self.delta_func(Pylos_copy))
             max_indice = [indice for indice,delta in enumerate(deltas) if delta == max(deltas)]
-            print(max_indice)
 #            Pylos_copy.set(mouvement['to'],player)
             child = self.tree(Pylos_copy, iter)
             children.append(child)
