@@ -221,10 +221,10 @@ class PylosClient(game.GameClient):
                         else:
                             if test_pylos.createSquare((layer, row, column)) is True:
                                 if player == 0:
-                                    removableballs = self.removableballs0(Test_pylos)
+                                    removableballs = self.removableballs0(test_pylos)
                                     removableballs.apppend([layer,row,column])
                                 else:
-                                    removableballs = self.removableballs1(Test_pylos)
+                                    removableballs = self.removableballs1(test_pylos)
                                     removableballs.apppend([layer, row, column])
                                 for i in removableballs:
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column:  # self.get(layer - 1, row, column) == None or
@@ -272,12 +272,12 @@ class PylosClient(game.GameClient):
             for row in range(4 - layer):
                 for column in range(4 - layer):
                     value = test_pylos.get(layer, row, column)
-                    if value == 0 :
+                    if value == 0:
                         try:
                             test_pylos.canMove(layer, row, column)
-                        except game.InvalidMoveException :
+                        except game.InvalidMoveException:
                             pass
-                        else :
+                        else:
                             coord = [layer, row, column]
                             removableballs.append(coord)
         return removableballs
@@ -300,12 +300,12 @@ class PylosClient(game.GameClient):
 
     def moveup(self, test_pylos):
         possibilities = []  # liste qui contiendra move (dictionnaire avec la sorte de move, de où à où)
-        if test_pylos._state['visible']['turn'] is 0:  # si c'est le tour du joueur 0 : on cherche les 1 (c'est des 1 ou des @?)
+        if test_pylos._state['visible']['turn'] is 0:  # si c'est le tour du joueur 0 : on cherche les 0
             for layer in range(4):
                 for row in range(4 - layer):
                     for column in range(4 - layer):
                         value = test_pylos.get(layer, row, column)
-                        if value is 0:  # on cherche les 1 (ou les @?)
+                        if value is 0:  # on cherche les 0 (toutes nos balles)
                             try:
                                 test_pylos.canMove(layer, row,column)  # peut-on la bouger ? est ce qu'il n'y a pas de boule dessus?
                             except game.InvalidMoveException:  # si la réponse est non, on passe à la case suivante
@@ -314,7 +314,6 @@ class PylosClient(game.GameClient):
                             for i in availableholes:  # on va voir dans chaque trou (exprimé en une liste [layer, row, column]
                                 if i[0] <= layer:  # checke si les layers des trous sont pas en dessous ou au même niveau que layer
                                     availableholes.remove(i)
-                            for i in availableholes:
                                 if i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
                                     availableholes.remove(i)
                                 if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
@@ -329,7 +328,7 @@ class PylosClient(game.GameClient):
 
                             for i in availableholes:
                                 move = {
-                                    'move': 'place',
+                                    'move': 'move',
                                     'from': [layer, row, column],
                                     'to': availableholes[i]
                                 }
@@ -362,19 +361,22 @@ class PylosClient(game.GameClient):
                                 possibilities.append(move)
 
 
-                        else:  # si c'est le tour du joueur 1, il faut chercher les 0 (d'après ce que j'ai vu quand j'ai lancé le jeu (pas logique)
+        else:                  # si c'est le tour du joueur 1, il faut chercher les 0 (d'après ce que j'ai vu quand j'ai lancé le jeu (pas logique)
+            for layer in range(4):
+                for row in range(4 - layer):
+                    for column in range(4 - layer):
+                        value = test_pylos.get(layer, row, column)
+                        if value is 1:  # on cherche les 1 (toutes nos balles)
                             try:
-                                test_pylos.canMove(layer, row, column)
+                                test_pylos.canMove(layer, row, column)              #partie pour 'from'
                             except game.InvalidMoveException:
                                 pass
 
-                            availableholes = self.holes(test_pylos)
+                            availableholes = self.holes(test_pylos)                 #partie pour 'to'
 
                             for i in availableholes:  # check si les layers des trous sont pas en dessous ou au même niveau que layer
                                 if i[0] <= layer:
                                     availableholes.remove(i)
-
-                            for i in availableholes:
                                 if i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
                                     availableholes.remove(i)
                                 if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
@@ -420,17 +422,11 @@ class PylosClient(game.GameClient):
                                 possibilities.append(move)
         return possibilities
 
-    # fonction dans classe client qui regarde la board et trouve tous les endroits il y a 1 et 0 selon le joueur
-    # selon le joueur qui joue, une liste qui trouve les 1 si joueur 1 et les 0 si joueur 0. et qui compare avec une
-    # liste qui a tous les trous (emplacements ou on peut mettre la boule en la levant) (sauf de la layer1)
-
-    # ----> meme dasn l'exemple du nextmove avec value=x.get(layer,row,column) et puis si on a un 1 et que c'est le joueur 1
-    # on l'ajoute dans la listes avec les mouvements possibles : lever par exemple (faudra checker si on sait la mettre en haut)
-
-    def tree(self,st , iter):
+    def tree(self, st, iter):
         player = st._state['visible']['turn']
         #state = Pylos_copy._state['visible']
-        mouvements = self.allplacement(st)
+        mouvements = self.allplacement(st) and self.moveup(st)
+
         children = []
         if player == 1:
             st._state['visible']['turn'] = 0
@@ -441,14 +437,10 @@ class PylosClient(game.GameClient):
         iter -= 1
         for mouvement in mouvements:
             Pylos_copy = copy.deepcopy(st)
-            Pylos_copy.set(mouvement['to'],player)
-            child = self.tree(Pylos_copy,iter)
+            Pylos_copy.set(mouvement['to'], player)
+            child = self.tree(Pylos_copy, iter)
             children.append(child)
         return Tree(st._state['visible'], children)
-
-
-
-
 
 
     # return move as string
