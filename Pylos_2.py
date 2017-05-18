@@ -236,6 +236,7 @@ class PylosClient(game.GameClient):
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
                                         removableballs.remove(i)
 
+                                for i in removableballs:
                                     move = {
                                         'move': 'place',
                                         'to': [layer, row, column],
@@ -263,7 +264,8 @@ class PylosClient(game.GameClient):
                             hole = [layer, row, column]                     #alors on met layer, row et column dans une liste hole
                         except game.InvalidMoveException:                   #si pas un trou valide ; on passe à la case suivante
                             pass
-                        availableholes.append(hole)                         #on ajoute la liste hole à la liste availableHoles
+                        else:
+                            availableholes.append(hole)                         #on ajoute la liste hole à la liste availableHoles
         return availableholes                                               #retourne la liste qui contient toutes les listes des emplacements des trous valides
 
     def removableballs0(self, test_pylos):
@@ -288,12 +290,12 @@ class PylosClient(game.GameClient):
             for row in range(4 - layer):
                 for column in range(4 - layer):
                     value = test_pylos.get(layer, row, column)
-                    if value == 1 :
+                    if value == 1:
                         try:
                             test_pylos.canMove(layer, row, column)
                         except game.InvalidMoveException :
                             pass
-                        else :
+                        else:
                             coord = [layer, row, column]
                             removableballs.append(coord)
         return removableballs
@@ -334,7 +336,7 @@ class PylosClient(game.GameClient):
                                 }
                                 possibilities.append(move)
 
-                            if test_pylos.createSquare(layer, row, column) is True:  # si ca forme un carré
+                            if test_pylos.createSquare((layer, row, column)) is True:  # si ca forme un carré
                                 # on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
                                 removableballs0 = self.removableballs0(test_pylos)
                                 for i in removableballs0:
@@ -395,7 +397,7 @@ class PylosClient(game.GameClient):
                                     'from': [layer, row, column],
                                     'to': availableholes[i]
                                 }
-                            if test_pylos.createSquare(layer, row, column) is True:  # si ca forme un carré
+                            if test_pylos.createSquare((layer, row, column)) is True:  # si ca forme un carré
                                 # on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
                                 removableballs1 = self.removableballs1()
                                 for i in removableballs1:
@@ -425,20 +427,18 @@ class PylosClient(game.GameClient):
     def tree(self, st, iter):
         player = st._state['visible']['turn']
         #state = Pylos_copy._state['visible']
-        mouvements = self.allplacement(st) and self.moveup(st)
-
+        placements = self.allplacement(st)
+        upmoves = self.moveup(st)
+        mouvements = placements + upmoves
         children = []
-        if player == 1:
-            st._state['visible']['turn'] = 0
-        else:
-            st._state['visible']['turn'] = 1
         if iter < 1:
             return Tree(st._state['visible'])
         iter -= 1
         for mouvement in mouvements:
             Pylos_copy = copy.deepcopy(st)
-            Pylos_copy.set(mouvement['to'], player)
-            child = self.tree(Pylos_copy, iter)
+            Pylos_copy.update(mouvement, player)
+#            Pylos_copy.set(mouvement['to'],player)
+            child = self.tree(Pylos_copy,iter)
             children.append(child)
         return Tree(st._state['visible'], children)
 
