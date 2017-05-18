@@ -1,7 +1,6 @@
-#!/usr/bin/env python3
 # pylos.py
-# Author: Quentin Lurkin
-# Version: April 28, 2017
+# Author: Elise Raxhon & Julien Beard
+# Version: May 19, 2017
 # -*- coding: utf-8 -*-
 
 import argparse
@@ -145,7 +144,6 @@ class PylosState(game.GameState):
             for coord in move['remove']:
                 sphere = self.remove(coord, player)
                 state['reserve'][player] += 1
-
         state['turn'] = (state['turn'] + 1) % 2
 
     # return 0 or 1 if a winner, return None if draw, return -1 if game continue
@@ -424,19 +422,30 @@ class PylosClient(game.GameClient):
                                 possibilities.append(move)
         return possibilities
 
+    def delta(self, st):
+        res0 = st._state['visible']['reserve'][0]
+        res1 = st._state['visible']['reserve'][1]
+        if st._state['visible']['turn'] is 0:
+            delta = res0-res1
+        else:
+            delta = res1-res0
+        return delta
+
     def tree(self, st, iter):
         player = st._state['visible']['turn']
         #state = Pylos_copy._state['visible']
-        placements = self.allplacement(st)
-        upmoves = self.moveup(st)
-        mouvements = placements + upmoves
-        children = []
-        if iter < 1:
+        placements = self.allplacement(st)          #liste avec les dicos "move" pour place
+        upmoves = self.moveup(st)                   #liste avec les dicos "move" pour moveup
+        mouvements = placements + upmoves           #liste avec TOUS les "move"
+        children = []                               #liste vide
+        if iter < 1:                                #????
             return Tree(st._state['visible'])
         iter -= 1
-        for mouvement in mouvements:
+        for mouvement in mouvements:                #on prend chaque "move" de la liste
+            reserve=[]
             Pylos_copy = copy.deepcopy(st)
             Pylos_copy.update(mouvement, player)
+
 #            Pylos_copy.set(mouvement['to'],player)
             child = self.tree(Pylos_copy,iter)
             children.append(child)
