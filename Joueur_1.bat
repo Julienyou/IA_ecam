@@ -1,2 +1,2 @@
-py pylos_2.py client Julien --verbose > test.txt
+py pylos_2.py client Julien > test.txt
 pause > nul
