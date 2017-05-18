@@ -264,7 +264,8 @@ class PylosClient(game.GameClient):
                             hole = [layer, row, column]                     #alors on met layer, row et column dans une liste hole
                         except game.InvalidMoveException:                   #si pas un trou valide ; on passe à la case suivante
                             pass
-                        availableholes.append(hole)                         #on ajoute la liste hole à la liste availableHoles
+                        else:
+                            availableholes.append(hole)                         #on ajoute la liste hole à la liste availableHoles
         return availableholes                                               #retourne la liste qui contient toutes les listes des emplacements des trous valides
 
     def removableballs0(self, test_pylos):
@@ -335,7 +336,7 @@ class PylosClient(game.GameClient):
                                 }
                                 possibilities.append(move)
 
-                            if test_pylos.createSquare(layer, row, column) is True:  # si ca forme un carré
+                            if test_pylos.createSquare((layer, row, column)) is True:  # si ca forme un carré
                                 # on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
                                 removableballs0 = self.removableballs0(test_pylos)
                                 for i in removableballs0:
@@ -393,7 +394,7 @@ class PylosClient(game.GameClient):
                                     'from': [layer, row, column],
                                     'to': availableholes[i]
                                 }
-                            if test_pylos.createSquare(layer, row, column) is True:  # si ca forme un carré
+                            if test_pylos.createSquare((layer, row, column)) is True:  # si ca forme un carré
                                 # on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
                                 removableballs1 = self.removableballs1()
                                 for i in removableballs1:
@@ -430,7 +431,9 @@ class PylosClient(game.GameClient):
     def tree(self,st , iter):
         player = st._state['visible']['turn']
         #state = Pylos_copy._state['visible']
-        mouvements = self.allplacement(st)
+        placements = self.allplacement(st)
+        upmoves = self.moveup(st)
+        mouvements = placements + upmoves
         children = []
         if iter < 1:
             return Tree(st._state['visible'])
