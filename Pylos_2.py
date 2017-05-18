@@ -442,10 +442,11 @@ class PylosClient(game.GameClient):
             return Tree(st._state['visible'])
         iter -= 1
         for mouvement in mouvements:                #on prend chaque "move" de la liste
-            reserve=[]
+            deltas = []
             Pylos_copy = copy.deepcopy(st)
             Pylos_copy.update(mouvement, player)
-
+            deltas.append(self.delta(Pylos_copy))
+            max_indice = [indice for indice,delta in enumerate(deltas) if delta == max(deltas)]
 #            Pylos_copy.set(mouvement['to'],player)
             child = self.tree(Pylos_copy,iter)
             children.append(child)
