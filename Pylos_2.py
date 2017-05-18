@@ -453,6 +453,7 @@ class PylosClient(game.GameClient):
             Pylos_copy.update(mouvement, player)
             deltas.append(self.delta(Pylos_copy))
             max_indice = [indice for indice,delta in enumerate(deltas) if delta == max(deltas)]
+            print(max_indice)
 #            Pylos_copy.set(mouvement['to'],player)
             child = self.tree(Pylos_copy, iter)
             children.append(child)
