@@ -148,37 +148,6 @@ class PylosState(game.GameState):
 
         state['turn'] = (state['turn'] + 1) % 2
 
-    def update1(self, move, player, state):  # fais un etat du jeu, enleve la bille dans la reserve,et fais jouer l'autre joueur
-        state = state._state['visible']
-
-        if move['move'] == 'place':
-            if state['reserve'][player] < 1:
-                raise game.InvalidMoveException('no more sphere')
-            self.set(move['to'], player)
-            state['reserve'][player] -= 1
-        elif move['move'] == 'move':
-            if move['to'][0] <= move['from'][0]:
-                raise game.InvalidMoveException('you can only move to upper layer')
-            sphere = self.remove(move['from'], player)
-            try:
-                self.set(move['to'], player)
-            except game.InvalidMoveException as e:
-                self.set(move['from'], player)
-                raise e
-        else:
-            raise game.InvalidMoveException('Invalid Move:\n{}'.format(move))
-
-        if 'remove' in move:
-            if not self.createSquare(move['to']):
-                raise game.InvalidMoveException('You cannot remove spheres')
-            if len(move['remove']) > 2:
-                raise game.InvalidMoveException('Can\'t remove more than 2 spheres')
-            for coord in move['remove']:
-                sphere = self.remove(coord, player)
-                state['reserve'][player] += 1
-
-        state['turn'] = (state['turn'] + 1) % 2
-
     # return 0 or 1 if a winner, return None if draw, return -1 if game continue
     def winner(self):
         state = self._state['visible']
