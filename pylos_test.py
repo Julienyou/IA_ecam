@@ -232,7 +232,7 @@ class PylosClient(game.GameClient):
         if state._state['visible']['reserve'][1] == 15:
             iteration = 2
             t = Tree(state,0,iteration)
-            #print(t)
+            print(t)
 
         print(state._state['visible'])
 

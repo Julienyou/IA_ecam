@@ -253,7 +253,7 @@ class Tree:
         self.player = player
         self.iteration = iteration
 
-        bouh = self.tree(self.__state,self.player,self.iteration)
+        self.tree(self.__state,self.player,self.iteration)
 
     @property
     def children(self):
@@ -303,7 +303,7 @@ class Tree:
                     for row in range(0,len(t['board'][layer])):
                         for column in range(0,len(t['board'][layer][row])):
                             for value in t['board'][layer][row]:
-                                if value == None:
+                                if value is None:
                                     t['board'][layer][row][column] = 0
                                     iteration -= 1
                                     self.addChild(Tree(statecopy,1,iteration))
@@ -313,14 +313,14 @@ class Tree:
                     for row in range(0,len(t['board'][layer])):
                         for column in range(0,len(t['board'][layer][row])):
                             for value in t['board'][layer][row]:
-                                if value == None:
+                                if value is None:
                                     t['board'][layer][row][column] = 1
                                     iteration -= 1
                                     self.addChild(Tree(statecopy, 0, iteration))
 
         arbre = {}
         arbre['tree'] = self.__children
-        #print(arbre)
+        print(arbre)
 #            if move == 'place' and player == 1 :
 #                for layer in t['board']:
 #                    for row in layer:
