@@ -423,9 +423,9 @@ class PylosClient(game.GameClient):
         return possibilities
 
     def delta(self, st):
-        res0 = self.state['reserve'][0]
-        res1 = self.state['reserve'][1]
-        if self.state['visible']['turn'] is 0:
+        res0 = st._state['visible']['reserve'][0]
+        res1 = st._state['visible']['reserve'][1]
+        if st._state['visible']['turn'] is 0:
             delta = res0-res1
         else:
             delta = res1-res0
