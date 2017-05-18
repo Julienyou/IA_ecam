@@ -1,2 +1,2 @@
-py pylos_test.py client Elise --verbose
+py pylos_2.py client Elise --verbose
 pause > nul

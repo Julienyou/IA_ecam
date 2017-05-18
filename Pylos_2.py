@@ -219,7 +219,7 @@ class PylosClient(game.GameClient):
                         except game.InvalidMoveException:
                             pass
                         else:
-                            if test_pylos.createsquare(layer, row, column) is True:
+                            if test_pylos.createSquare((layer, row, column)) is True:
                                 if player == 0:
                                     removableballs = self.removableballs0(Test_pylos)
                                     removableballs.apppend([layer,row,column])

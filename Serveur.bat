@@ -1,2 +1,2 @@
-py pylos_test.py server --verbose
+py pylos_2.py server --verbose
 pause > nul
