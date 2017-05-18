@@ -431,12 +431,18 @@ class PylosClient(game.GameClient):
             delta = res1-res0
         return delta
 
+    def firstmoves(self, mouvements):
+        firstmoves = mouvements
+        return firstmoves                           #liste avec les mouvements
+
     def tree(self, st, iter):
         player = st._state['visible']['turn']
         #state = Pylos_copy._state['visible']
         placements = self.allplacement(st)          #liste avec les dicos "move" pour place
         upmoves = self.moveup(st)                   #liste avec les dicos "move" pour moveup
         mouvements = placements + upmoves           #liste avec TOUS les "move"
+        if iter is 3:
+            return self.firstmoves(mouvements)      #renvoie la liste avec les mouvements de la première itération (pour pouvoir les utiliser après pour choisir le nextmove)
         children = []                               #liste vide
         if iter < 1:                                #????
             return Tree(st._state['visible'])
@@ -448,7 +454,7 @@ class PylosClient(game.GameClient):
             deltas.append(self.delta(Pylos_copy))
             max_indice = [indice for indice,delta in enumerate(deltas) if delta == max(deltas)]
 #            Pylos_copy.set(mouvement['to'],player)
-            child = self.tree(Pylos_copy,iter)
+            child = self.tree(Pylos_copy, iter)
             children.append(child)
         return Tree(st._state['visible'], children)
 
