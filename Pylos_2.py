@@ -198,6 +198,8 @@ class PylosClient(game.GameClient):
     '''Class representing a client for the Pylos game.'''
 
     def __init__(self, name, server, verbose=False):
+        self.deltas = []
+        self.firstmoves = []
         super().__init__(server, PylosState, verbose=verbose)
         self.__name = name
 
@@ -227,11 +229,11 @@ class PylosClient(game.GameClient):
                                 for i in removableballs:
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column:  # self.get(layer - 1, row, column) == None or
                                         removableballs.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
                                         removableballs.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
                                         removableballs.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
+                                    elif i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
                                         removableballs.remove(i)
 
                                 for i in removableballs:
@@ -314,13 +316,13 @@ class PylosClient(game.GameClient):
                             for i in availableholes:  # on va voir dans chaque trou (exprimé en une liste [layer, row, column]
                                 if i[0] <= layer:  # checke si les layers des trous sont pas en dessous ou au même niveau que layer
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
+                                elif i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
+                                elif i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row + 1, column + 1) == None or
+                                elif i[0] == layer + 1 and i[1] == row + 1 and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row + 1, column + 1) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row, column + 1) == None
+                                elif i[0] == layer + 1 and i[1] == row and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row, column + 1) == None
                                     availableholes.remove(i)
 
                             # maintenant il nous reste une liste avec juste les bons trous qui sont valides.
@@ -330,7 +332,7 @@ class PylosClient(game.GameClient):
                                 move = {
                                     'move': 'move',
                                     'from': [layer, row, column],
-                                    'to': availableholes[i]
+                                    'to': i
                                 }
                                 possibilities.append(move)
 
@@ -340,13 +342,13 @@ class PylosClient(game.GameClient):
                                 for i in removableballs0:
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column:  # self.get(layer - 1, row, column) == None or
                                         removableballs0.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
                                         removableballs0.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
                                         removableballs0.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
+                                    elif i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
                                         removableballs0.remove(i)
-                                    if i[0] == layer and i[1] == row and i[2] == column:  # la boule qu'on a montée n'est plus valable en tant que removableballs
+                                    elif i[0] == layer and i[1] == row and i[2] == column:  # la boule qu'on a montée n'est plus valable en tant que removableballs
                                         removableballs0.remove(i)
                                     removableballs0.append(i)  # on ajoute la boule qu'on vient de placer dans les removableballs
                                 removableballs01 = copy.deepcopy(removableballs0)  # mtnt on a deux listes avec les removableballs
@@ -377,13 +379,13 @@ class PylosClient(game.GameClient):
                             for i in availableholes:  # check si les layers des trous sont pas en dessous ou au même niveau que layer
                                 if i[0] <= layer:
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
+                                elif i[0] == layer + 1 and i[1] == row and i[2] == column:  # pour ce cas-ci : self.get(layer + 1, row, column) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
+                                elif i[0] == layer + 1 and i[1] == row + 1 and i[0] == column:  # pour ce cas-ci : self.get(layer + 1, row + 1, column) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row + 1 and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row + 1, column + 1) == None or
+                                elif i[0] == layer + 1 and i[1] == row + 1 and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row + 1, column + 1) == None or
                                     availableholes.remove(i)
-                                if i[0] == layer + 1 and i[1] == row and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row, column + 1) == None
+                                elif i[0] == layer + 1 and i[1] == row and i[0] == column + 1:  # pour ce cas-ci : self.get(layer + 1, row, column + 1) == None
                                     availableholes.remove(i)
 
                             # maintenant il nous reste une liste avec juste les bons trous qui sont valides.
@@ -393,7 +395,7 @@ class PylosClient(game.GameClient):
                                 move = {
                                     'move': 'move',
                                     'from': [layer, row, column],
-                                    'to': availableholes[i]
+                                    'to': i
                                 }
                             if test_pylos.createSquare((layer, row, column)) is True:  # si ca forme un carré
                                 # on va recevoir removableballs1 et on va enlever les boules qui sont en dessous de la boule qu'on vient de placer et enlever la boule qu'on vient de bouger ET on va rajouter celle qu'on vient de placer (son nouvel emplacement)
@@ -401,13 +403,13 @@ class PylosClient(game.GameClient):
                                 for i in removableballs1:
                                     if i[0] == layer - 1 and i[1] == row and i[2] == column:  # self.get(layer - 1, row, column) == None or
                                         removableballs1.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column:  # self.get(layer - 1, row + 1, column) == None or
                                         removableballs1.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
+                                    elif i[0] == layer - 1 and i[1] == row + 1 and i[2] == column + 1:  # self.get(layer - 1, row + 1, column + 1) == None or
                                         removableballs1.remove(i)
-                                    if i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
+                                    elif i[0] == layer - 1 and i[1] == row and i[2] == column + 1:  # self.get(layer - 1, row, column + 1) == None
                                         removableballs1.remove(i)
-                                    if i[0] == layer and i[1] == row and i[2] == column:  # la boule qu'on a montée n'est plus valable en tant que removableballs
+                                    elif i[0] == layer and i[1] == row and i[2] == column:  # la boule qu'on a montée n'est plus valable en tant que removableballs
                                         removableballs1.remove(i)
                                     removableballs1.append(i)  # on ajoute la boule qu'on vient de placer dans les removableballs
                                 removableballs11 = copy.deepcopy(removableballs1)  # mtnt on a deux listes avec les removableballs
@@ -425,18 +427,21 @@ class PylosClient(game.GameClient):
     def delta_func(self, st):
         res0 = st._state['visible']['reserve'][0]
         res1 = st._state['visible']['reserve'][1]
+        numero = st._state['visible']['numero']
         if st._state['visible']['turn'] is 0:
             delta = res0-res1
         else:
             delta = res1-res0
-        return delta
+        return numero, delta
 
     def firstmoves_func(self, mouvements):
-        firstmoves = mouvements
-        return firstmoves                           #liste avec les mouvements
+        self.firstmoves = []
+        self.firstmoves.append(mouvements)
+        return self.firstmoves                           #liste avec les mouvements
 
     def tree(self, st, iter):
         player = st._state['visible']['turn']
+        numero = st._state['visible']['numero']
         #state = Pylos_copy._state['visible']
         placements = self.allplacement(st)          #liste avec les dicos "move" pour place
         upmoves = self.moveup(st)                   #liste avec les dicos "move" pour moveup
@@ -446,17 +451,44 @@ class PylosClient(game.GameClient):
         children = []                               #liste vide
         if iter < 1:                                #????
             return Tree(st._state['visible'])
-        iter -= 1
-        deltas = []
-        for mouvement in mouvements:                #on prend chaque "move" de la liste
-            Pylos_copy = copy.deepcopy(st)
-            Pylos_copy.update(mouvement, player)
-            deltas.append(self.delta_func(Pylos_copy))
-            max_indice = [indice for indice,delta in enumerate(deltas) if delta == max(deltas)]
-#            Pylos_copy.set(mouvement['to'],player)
-            child = self.tree(Pylos_copy, iter)
-            children.append(child)
-        return Tree(st._state['visible'], children)
+        self.deltas = []
+        if iter == 3:
+            iter -= 1
+            for mouvement in mouvements:                #on prend chaque "move" de la liste
+                Pylos_copy = copy.deepcopy(st)
+                numero += 1
+                Pylos_copy.update(mouvement, player)
+                Pylos_copy._state['visible']['numero'] = numero
+                self.deltas.append(self.delta_func(Pylos_copy))
+    #            max_indice = [numero for numero, delta in self.deltas if delta == max(self.deltas[1])]
+    #            Pylos_copy.set(mouvement['to'],player)
+                child = self.tree(Pylos_copy, iter)
+                children.append(child)
+        else:
+            iter -= 1
+            for mouvement in mouvements:  # on prend chaque "move" de la liste
+                Pylos_copy = copy.deepcopy(st)
+                Pylos_copy.update(mouvement, player)
+                Pylos_copy._state['visible']['numero'] = numero
+                self.deltas.append(self.delta_func(Pylos_copy))
+     #           max_indice = [numero for numero, delta in self.deltas if delta == max(self.deltas[1])]
+                #            Pylos_copy.set(mouvement['to'],player)
+                child = self.tree(Pylos_copy, iter)
+                children.append(child)
+        return Tree(st._state['visible'], children,)
+
+    def mostfrequent(self,L):
+        """Retourne l'élément le plus fréquent de la liste"""
+        L.sort()  # pour que les éléments identiques soient assemblés
+        n0, e0 = 0, None  # pour conserver le plus fréquent
+        ep = None  # stocke l'élément distinct de la boucle précédente
+        for e in L:
+            if e != ep:  # si l'élément e n'a pas déjà été rencontré, on compte la frequence
+                n = L.count(e)
+                if n > n0:
+                    n0, e0 = n, e  # on stocke le nouvel élément le plus fréquent
+                ep = e  # on stocke l'élément courant pour la boucle suivante
+        return e0, n0
 
 
     # return move as string
@@ -489,18 +521,35 @@ class PylosClient(game.GameClient):
         return it in JSON
         '''
 
-        if state._state['visible']['reserve'][0] == 15:
-            pylosCopy = PylosState()
+#        if state._state['visible']['reserve'][0] == 15:
+#            pylosCopy = PylosState()
+#            pylosCopy._state['visible']['numero'] = -1
+#            print(self.tree(pylosCopy, 3))
+#            print(self.firstmoves[0][0])
+        print('coucou')
+        if state._state['visible']['turn'] == 1:
+            print('if ok')
+            pylosCopy = copy.deepcopy(state)
+            pylosCopy._state['visible']['numero'] = -1
             print(self.tree(pylosCopy, 3))
+            for i in range(len(self.deltas)):
+                print('for ok')
+                max_indice = [numero for numero, delta in self.deltas if delta == max(self.deltas[i])]
+            e, n = self.mostfrequent(max_indice)
+            print(self.firstmoves[0][0])
+            return json.dumps(self.firstmoves[0][0])
+            #indice = self.deltas[0]
+            #print(self.firstmoves[0][0])
 
-        for layer in range(4):
-            for row in range(4 - layer):
-                for column in range(4 - layer):
-                    if state.get(layer, row, column) == None:
-                        return json.dumps({
-                            'move': 'place',
-                            'to': [layer, row, column]
-                        })
+        if state._state['visible']['turn'] == 0:
+            for layer in range(4):
+                for row in range(4 - layer):
+                    for column in range(4 - layer):
+                        if state.get(layer, row, column) == None:
+                            return json.dumps({
+                                'move': 'place',
+                                'to': [layer, row, column]
+                            })
 
 
 
