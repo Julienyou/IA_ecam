@@ -9,9 +9,9 @@ import sys
 import json
 import copy
 import json
-
 from tree import Tree
 from lib import game
+
 
 
 class PylosState(game.GameState):
